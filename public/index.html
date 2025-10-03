@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano de Recuperação de Desastres (PRD)</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="home-style.css">
+</head>
+<body>
+    <div class="dashboard-navbar">
+        <a href="/home.html" class="dashboard-logo"><i class="fas fa-shield-alt"></i></a>
+        <div class="brand-text">
+            <span class="dashboard-title">Plano de Recuperação de Desastres</span>
+            <span class="dashboard-subtitle">Painel de PRD</span>
+        </div>
+        <div class="dashboard-user">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span id="userInfo"></span>
+            </div>
+            <button id="logoutButton" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                Sair
+            </button>
+        </div>
+    </div>
+
+    <div class="dashboard-main">
+        <div class="dashboard-sidebar">
+            <div class="sidebar-section">
+                <h3>Menu</h3>
+                <ul id="sidebarMenu">
+                    <li id="logoutSidebarBtn" class="tab-item">
+                        <span class="sidebar-icon" style="margin-right:8px;vertical-align:middle;">
+                            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M16 17l5-5-5-5" stroke="#d32f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12H9" stroke="#d32f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 19a7 7 0 1 1 0-14" stroke="#d32f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                        Sair
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <div class="dashboard-header">
+                <h1><i class="fas fa-clipboard-list"></i> Plano de Recuperação de Desastres</h1>
+                <p class="dashboard-subtitle">Monitoramento em tempo real do PRD ativo</p>
+            </div>
+            
+            <div class="dashboard-cards">
+                <div class="dashboard-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-icon">
+                        <i class="fas fa-stopwatch"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">Tempo Decorrido</div>
+                        <div class="card-value" id="progressiveClock">00:00:00</div>
+                        <div class="card-sub">
+                            <i class="fas fa-play"></i>
+                            Desde o início do PRD
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">Tempo Restante</div>
+                        <div class="card-value" id="regressiveClock">12:00:00</div>
+                        <div class="card-sub">
+                            <i class="fas fa-hourglass-half"></i>
+                            Para atingir RTO
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">Status da Simulação</div>
+                        <div class="card-value" id="simulationStatusCard">Carregando...</div>
+                        <div class="card-sub">
+                            <i class="fas fa-info-circle"></i>
+                            Status atual
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard-card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">Progresso RTO</div>
+                        <div class="card-value" id="rtoProgressCard">0%</div>
+                        <div class="card-sub">
+                            <i class="fas fa-percentage"></i>
+                            Percentual consumido
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-graph-section" data-aos="fade-up" data-aos-delay="500">
+                <div class="section-header">
+                    <h2 class="graph-title">
+                        <i class="fas fa-stopwatch"></i>
+                        Monitoramento Detalhado
+                    </h2>
+                </div>
+                <div class="monitoring-cards">
+                    <div class="monitoring-card">
+                        <div class="monitoring-label">
+                            <i class="fas fa-play-circle"></i>
+                            Status da Simulação
+                        </div>
+                        <div class="monitoring-value" id="simulationStatus">Carregando...</div>
+                    </div>
+                    <div class="monitoring-card">
+                        <div class="monitoring-label">
+                            <i class="fas fa-target"></i>
+                            RTO Definido
+                        </div>
+                        <div class="monitoring-value"><span id="rtoDefined">...</span> min</div>
+                    </div>
+                    <div class="monitoring-card">
+                        <div class="monitoring-label">
+                            <i class="fas fa-clock"></i>
+                            Tempo Consumido
+                        </div>
+                        <div class="monitoring-value"><span id="progressiveCounter">...</span> min</div>
+                    </div>
+                    <div class="monitoring-card">
+                        <div class="monitoring-label">
+                            <i class="fas fa-hourglass-end"></i>
+                            Tempo Restante
+                        </div>
+                        <div class="monitoring-value"><span id="regressiveCounter">...</span> min</div>
+                    </div>
+                    <div class="monitoring-card">
+                        <div class="monitoring-label">
+                            <i class="fas fa-percentage"></i>
+                            Percentual do RTO
+                        </div>
+                        <div class="monitoring-value" id="rtoPercentage">...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-products" data-aos="fade-up" data-aos-delay="600">
+                <div class="section-header">
+                    <h2 class="products-title">
+                        <i class="fas fa-list-check"></i>
+                        Tarefas do PRD
+                    </h2>
+                    <div class="task-actions-header">
+                        <button id="cancelButton" class="btn btn-secondary btn-sm" disabled>
+                            <i class="fas fa-ban"></i>
+                            Cancelar Simulação
+                        </button>
+                        <button id="generateReportButton" class="btn btn-primary btn-sm" disabled>
+                            <i class="fas fa-file-alt"></i>
+                            Gerar Relatório
+                        </button>
+                    </div>
+                </div>
+                <div class="task-list" id="prdTasks">
+                    <div class="task-placeholder">
+                        <i class="fas fa-tasks"></i>
+                        <p>Aguardando início da simulação...</p>
+                        <small>As tarefas aparecerão aqui quando o PRD for ativado</small>
+                    </div>
+                </div>
+                <div id="cancelForm" class="cancel-form" style="display:none;">
+                    <div class="cancel-form-header">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Cancelar Simulação</h3>
+                    </div>
+                    <div class="cancel-form-body">
+                        <div class="form-group">
+                            <label for="cancelReason">Motivo do cancelamento</label>
+                            <textarea id="cancelReason" placeholder="Descreva o motivo do cancelamento (opcional)"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="cancelStage">Etapa atual</label>
+                            <input type="text" id="cancelStage" placeholder="Em qual etapa a simulação está sendo cancelada (opcional)">
+                        </div>
+                    </div>
+                    <div class="cancel-form-actions">
+                        <button id="cancelCancelButton" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                        <button id="confirmCancelButton" class="btn btn-danger">
+                            <i class="fas fa-check"></i>
+                            Confirmar Cancelamento
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-graph-section" data-aos="fade-up" data-aos-delay="700">
+                <div class="section-header">
+                    <h2 class="graph-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Relatório Final
+                    </h2>
+                </div>
+                <div class="report-container">
+                    <div class="report-output" id="finalReportOutput">
+                        <div class="report-placeholder">
+                            <i class="fas fa-file-alt"></i>
+                            <p>Relatório será gerado aqui</p>
+                            <small>Complete a simulação para gerar o relatório detalhado</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="messages" class="alert-messages" style="display:none;"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Aguarda o DOM estar pronto antes de inicializar o relógio
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeClock();
+        });
+        
+        // Variáveis globais do relógio
+        let progressiveClock, regressiveClock;
+        let clockInterval = null;
+        const TOTAL_SECONDS = 12 * 60 * 60; // 12 horas em segundos
+        let lastProgressiveSeconds = 0;
+        let lastRegressiveSeconds = 12 * 60 * 60;
+        let lastClockUpdate = Date.now();
+        
+        function initializeClock() {
+            // Relógio global sincronizado pelo backend
+            progressiveClock = document.getElementById('progressiveClock');
+            regressiveClock = document.getElementById('regressiveClock');
+            if (!progressiveClock || !regressiveClock) {
+                console.error('Clock elements not found!');
+                return;
+            }
+            
+            // Inicializa os relógios com valores padrão (parados)
+            progressiveClock.textContent = formatClock(0);
+            regressiveClock.textContent = formatClock(12 * 60 * 60);
+            
+            // Inicia o relógio que atualiza baseado nos dados do backend
+            setInterval(() => {
+                updateClockDisplay();
+            }, 1000);
+        }
+        
+        function updateClockDisplay() {
+            if (!progressiveClock || !regressiveClock) return;
+            
+            // Verifica se há uma simulação ativa
+            const statusData = window.currentStatusData;
+            if (statusData && statusData.overallStatus === 'active' && statusData.monitoring && statusData.monitoring.progressiveCounterStart) {
+                // Calcula o tempo decorrido desde o início da simulação
+                const now = Date.now();
+                const startTime = statusData.monitoring.progressiveCounterStart;
+                const elapsedSeconds = Math.floor((now - startTime) / 1000);
+                
+                // Usa o RTO definido na simulação (em minutos) convertido para segundos
+                const rtoSeconds = (statusData.rtoDefinedMinutes || 720) * 60; // Default 12 horas
+                
+                const progressiveSeconds = Math.min(elapsedSeconds, rtoSeconds);
+                const regressiveSeconds = Math.max(rtoSeconds - elapsedSeconds, 0);
+                
+                progressiveClock.textContent = formatClock(progressiveSeconds);
+                regressiveClock.textContent = formatClock(regressiveSeconds);
+            } else {
+                // Se não há simulação ativa, mostra valores padrão
+                progressiveClock.textContent = formatClock(0);
+                regressiveClock.textContent = formatClock(12 * 60 * 60); // 12 horas padrão
+            }
+        }
+
+        function formatClock(secs) {
+            const h = String(Math.floor(secs / 3600)).padStart(2, '0');
+            const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
+            const s = String(secs % 60).padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+
+        
+        function updateClocksFromBackend(statusData) {
+            // Esta função agora é chamada apenas para atualizar os dados globais
+            // O relógio é atualizado pela função updateClockDisplay()
+            // Não faz nada específico aqui, pois o relógio é controlado pelo updateClockDisplay
+        }
+
+
+        // Sistema de alertas por tempo das tarefas
+        function startTaskTimer(taskId, estimatedTime) {
+            if (!taskStartTimes[taskId]) {
+                taskStartTimes[taskId] = Date.now();
+                taskAlerts[taskId] = {
+                    initialAlert: false,
+                    recurringAlerts: 0,
+                    firstAlertTime: null
+                };
+            }
+        }
+
+        function checkTaskTimeAlerts() {
+            const now = Date.now();
+            
+            // Verifica se há simulação ativa
+            const statusData = window.currentStatusData; // Assumindo que armazenamos o status atual
+            if (!statusData || statusData.overallStatus !== 'active') {
+                return; // Não verifica alertas se não há simulação ativa
+            }
+            
+            prdActivities.forEach(task => {
+                // Verifica se a tarefa foi concluída no backend
+                const isCompleted = statusData.currentPRD && statusData.currentPRD[0] && statusData.currentPRD[0].tasks 
+                    ? statusData.currentPRD[0].tasks.find(t => t.id === task.id && t.completed) 
+                    : false;
+                
+                if (taskStartTimes[task.id] && !isCompleted) {
+                    const elapsed = Math.floor((now - taskStartTimes[task.id]) / 60000); // em minutos
+                    const estimatedTime = task.estimatedTime;
+                    
+                    // Primeiro alerta exatamente quando atinge o tempo estimado
+                    if (elapsed >= estimatedTime && !taskAlerts[task.id].initialAlert) {
+                        taskAlerts[task.id].initialAlert = true;
+                        showMessage('warning', `⚠️ ATENÇÃO: A tarefa "${task.name}" atingiu o tempo estimado de ${estimatedTime} minutos!`);
+                        // Registra o momento do primeiro alerta para calcular os alertas recorrentes
+                        taskAlerts[task.id].firstAlertTime = now;
+                    }
+                    
+                    // Alertas recorrentes exatamente a cada 5 minutos após o primeiro alerta
+                    if (taskAlerts[task.id].initialAlert && taskAlerts[task.id].firstAlertTime) {
+                        const minutesSinceFirstAlert = Math.floor((now - taskAlerts[task.id].firstAlertTime) / 60000);
+                        const expectedRecurringAlerts = Math.floor(minutesSinceFirstAlert / 5);
+                        
+                        if (expectedRecurringAlerts > taskAlerts[task.id].recurringAlerts) {
+                            taskAlerts[task.id].recurringAlerts = expectedRecurringAlerts;
+                            showMessage('error', `🚨 URGENTE: A tarefa "${task.name}" está ${elapsed - estimatedTime} minutos atrasada!`);
+                        }
+                    }
+                } else if (isCompleted && taskStartTimes[task.id]) {
+                    // Limpa o timer se a tarefa foi concluída
+                    clearTaskTimer(task.id);
+                }
+            });
+        }
+
+        function clearTaskTimer(taskId) {
+            delete taskStartTimes[taskId];
+            delete taskAlerts[taskId];
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verificar alertas de tempo das tarefas a cada minuto
+            setInterval(checkTaskTimeAlerts, 60000);
+        });
+        const isAuthenticated = localStorage.getItem('isAuthenticated');
+        let user = null;
+        if (isAuthenticated) {
+            let rawUser = localStorage.getItem('user');
+            
+            // Se o usuário principal está corrompido, tenta recuperar do backup
+            if (!rawUser) {
+                rawUser = localStorage.getItem('userBackup') || localStorage.getItem('lastValidUser');
+                if (rawUser) {
+                    localStorage.setItem('user', rawUser); // Restaura o usuário principal
+                }
+            }
+            
+            if (rawUser) {
+                try {
+                    user = JSON.parse(rawUser);
+                    
+                    // Validação adicional para detectar troca incorreta de usuário
+                    if (user && user.username) {
+                        // Verifica se o usuário mudou inesperadamente
+                        const lastKnownUser = localStorage.getItem('lastValidUser');
+                        if (lastKnownUser) {
+                            const lastUser = JSON.parse(lastKnownUser);
+                            if (lastUser.username !== user.username) {
+                                // Se detectar mudança suspeita user2->user3, usa o último usuário válido
+                                if (lastUser.username === 'user2' && user.username === 'user3') {
+                                    user = lastUser;
+                                    localStorage.setItem('user', JSON.stringify(user));
+                                }
+                            }
+                        }
+                        
+                        // Atualiza o backup do usuário válido
+                        localStorage.setItem('lastValidUser', JSON.stringify(user));
+                    }
+                } catch (e) {
+                    console.error('Error parsing user:', e);
+                    user = null;
+                }
+            }
+        }
+        // Garante que user2 não é trocado por user3
+        if (!isAuthenticated || !user || !user.username) {
+            window.location.href = '/';
+        }
+        // Atualiza funções dos usuários para TI, Comunicação e Infraestrutura
+        const roleMap = { 'ti': 'TI', 'comunicacao': 'Comunicação', 'infraestrutura': 'Infraestrutura' };
+        let displayRole = user.role;
+        if (roleMap[displayRole.toLowerCase()]) {
+            displayRole = roleMap[displayRole.toLowerCase()];
+        }
+        document.getElementById('userInfo').textContent = `Usuário: ${user.name} (${displayRole})`;
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = '/';
+        });
+        // Sidebar logout
+        const logoutSidebarBtn = document.getElementById('logoutSidebarBtn');
+        if (logoutSidebarBtn) {
+            logoutSidebarBtn.onclick = () => {
+                localStorage.clear();
+                window.location.href = '/';
+            };
+        }
+
+        const API_BASE_URL = 'http://localhost:3000/api/simulation';
+        let simulationInterval = null;
+
+        const simulationStatusDisplay = document.getElementById('simulationStatus');
+        const rtoDefinedDisplay = document.getElementById('rtoDefined');
+        const progressiveCounterDisplay = document.getElementById('progressiveCounter');
+        const regressiveCounterDisplay = document.getElementById('regressiveCounter');
+        const rtoPercentageDisplay = document.getElementById('rtoPercentage');
+        const prdTasksDisplay = document.getElementById('prdTasks');
+
+        const finalReportOutput = document.getElementById('finalReportOutput');
+        const messagesDisplay = document.getElementById('messages');
+        
+        async function callApi(method, endpoint, data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                };
+                if (data) { options.body = JSON.stringify(data); }
+                const response = await fetch(endpoint, options);
+                const result = await response.json();
+                if (!response.ok) { throw new Error(result.message || `Erro HTTP: ${response.status}`); }
+                return result;
+            } catch (error) {
+                console.error('Erro na requisição API:', error);
+                showMessage('error', `Erro: ${error.message}`);
+                return null;
+            }
+        }
+
+        function showMessage(type, message) {
+            messagesDisplay.className = `alert-messages ${type}-message`;
+            messagesDisplay.textContent = message;
+            messagesDisplay.style.display = 'block';
+            setTimeout(() => {
+                messagesDisplay.style.display = 'none';
+            }, 5000);
+        }
+
+        function disableAllButtons() {
+            cancelButton.disabled = true;
+            generateReportButton.disabled = true;
+            document.querySelectorAll('.task-list button').forEach(btn => btn.disabled = true);
+            if (cancelForm) cancelForm.style.display = 'none';
+        }
+
+        function enableButtonsBasedOnStatus(statusData) {
+            disableAllButtons();
+
+            const currentStatus = statusData.overallStatus;
+
+            // Habilita o botão para todos os responsáveis pela tarefa e com simulação ativa
+            if (statusData.currentPRD && currentStatus === 'active') {
+                statusData.currentPRD.forEach(phase => {
+                    phase.tasks.forEach(task => {
+                        const isCompleted = task.completed;
+                        const isUserResponsible = Array.isArray(task.responsible)
+                            ? task.responsible.map(r => String(r).toLowerCase()).includes(String(user.role || '').toLowerCase())
+                            : String(user.role || '').toLowerCase() === String(task.responsible || '').toLowerCase();
+                        if (!isCompleted && isUserResponsible) {
+                            // Busca o botão dentro do container correto
+                            const btn = document.querySelector(`#prdTasks button[data-task-id='${task.id}'][data-responsible-id='${String(task.responsible)}']`);
+                            if (btn) btn.disabled = false;
+                        }
+                    });
+                });
+            }
+
+            // Permissão para cancelar: apenas o usuário que iniciou a votação
+            if (currentStatus === 'active' && statusData.initiatedBy === user.username) {
+               cancelButton.disabled = false;
+            }
+
+            // Permissão para gerar relatório: qualquer usuário
+            if (['completed_in_rto', 'completed_out_of_rto', 'cancelled_by_vote', 'cancelled_manual'].includes(currentStatus)) {
+                generateReportButton.disabled = false;
+                clearInterval(simulationInterval);
+                simulationInterval = null;
+            }
+        }
+
+        function updateStatusDisplay(statusData) {
+            // Armazena os dados de status globalmente para o sistema de alertas
+            window.currentStatusData = statusData;
+            
+            if (!statusData || !statusData.currentPRD || statusData.overallStatus === 'pending_vote' || statusData.overallStatus === 'awaiting_details') {
+                simulationStatusDisplay.textContent = 'Aguardando início do PRD...';
+                rtoDefinedDisplay.textContent = '...';
+                progressiveCounterDisplay.textContent = '...';
+                regressiveCounterDisplay.textContent = '...';
+                rtoPercentageDisplay.textContent = '...';
+                document.getElementById('simulationStatusCard').textContent = 'Aguardando...';
+                document.getElementById('rtoProgressCard').textContent = '0%';
+                prdTasksDisplay.innerHTML = '<p>Nenhuma simulação de crise em andamento. Inicie uma pela aba Home.</p>';
+                disableAllButtons();
+                
+                // Atualiza os relógios mesmo quando não há simulação ativa
+                updateClocksFromBackend(statusData);
+                return;
+            }
+
+            simulationStatusDisplay.textContent = statusData.overallStatus;
+            rtoDefinedDisplay.textContent = statusData.rtoDefinedMinutes;
+            progressiveCounterDisplay.textContent = statusData.monitoring.progressiveCounterMinutes;
+            regressiveCounterDisplay.textContent = statusData.monitoring.regressiveCounterMinutes;
+            // Corrige bug do percentual absurdo
+            let rtoPercent = statusData.monitoring.percentageRTOUsed;
+            if (typeof rtoPercent !== 'number' || isNaN(rtoPercent) || rtoPercent < 0) rtoPercent = 0;
+            if (rtoPercent > 100) rtoPercent = 100;
+            rtoPercentageDisplay.textContent = rtoPercent.toFixed(2) + '%';
+            document.getElementById('simulationStatusCard').textContent = statusData.overallStatus;
+            document.getElementById('rtoProgressCard').textContent = rtoPercent.toFixed(2) + '%';
+
+            updateClocksFromBackend(statusData);
+            renderPRDTasks(statusData.currentPRD, statusData.overallStatus);
+            enableButtonsBasedOnStatus(statusData);
+
+            if (['completed_in_rto', 'completed_out_of_rto', 'cancelled_by_vote', 'cancelled_manual'].includes(statusData.overallStatus)) {
+                clearInterval(simulationInterval);
+                simulationInterval = null;
+                if (statusData.overallStatus === 'completed_in_rto') {
+                    showMessage('success', `Simulação CONCLUÍDA com SUCESSO! Dentro do RTO. Tempo total: ${statusData.monitoring.progressiveCounterMinutes} min.`);
+                } else if (statusData.overallStatus === 'completed_out_of_rto') {
+                    showMessage('error', `Simulação FINALIZADA FORA DO RTO! Excedeu ${statusData.completionDetails.timeExceededMinutes} min. Perda estimada: ${statusData.completionDetails.estimatedLoss.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}.`);
+                }
+            }
+        }
+
+        // Nova lista de atividades do PRD
+        // Lista espelhada das atividades do backend (papéis em minúsculo: ti, comunicacao, infraestrutura)
+        const prdActivities = [
+            { id: 1, name: 'Identificar o incidente e a causa, avaliar o impacto e informar Líder.', responsible: 'comunicacao', estimatedTime: 15, dependencies: [] },
+            { id: 2, name: 'Acionar o Gerente de Tecnologia da Informação e solicitar a disponibilização de novos recursos do produto.', responsible: 'comunicacao', estimatedTime: 15, dependencies: [1] },
+            { id: 3, name: 'Determinar ao Líder que comunique a indisponibilidade às áreas afetadas.', responsible: 'infraestrutura', estimatedTime: 10, dependencies: [2] },
+            { id: 4, name: "Abrir chamado para a Área de Comunicação no serviço 'Comunicado oficial sobre indisponibilidade de serviços/produtos' para comunicar as áreas afetadas sobre a indisponibilidade do produto.", responsible: 'infraestrutura', estimatedTime: 15, dependencies: [3] },
+            { id: 5, name: 'Área de TI (Contingência) Disponibilizar os novos recursos.', responsible: 'ti', estimatedTime: 120, dependencies: [4] },
+            { id: 6, name: 'Líder orientar a recuperação do produto no novo ambiente.', responsible: 'infraestrutura', estimatedTime: 10, dependencies: [5] },
+            { id: 7, name: 'Executar a recuperação de acordo com o POP', responsible: 'ti', estimatedTime: 480, dependencies: [6] },
+            { id: 8, name: 'Validação do produto nos novos recursos.', responsible: 'infraestrutura', estimatedTime: 15, dependencies: [7] },
+            { id: 9, name: "Abrir chamado para a Área de Comunicação no serviço 'Comunicado oficial sobre indisponibilidade de serviços/produtos' para comunicar as áreas afetadas sobre o retorno da disponibilidade do produto. Finalizado o PRD com sucesso - gerar o relatório e armazenar o processo como histórico.", responsible: 'comunicacao', estimatedTime: 10, dependencies: [8] }
+        ];
+
+        // Estado local das tarefas concluídas
+        let completedTasks = [];
+        
+        // Sistema de alertas por tempo
+        let taskStartTimes = {};
+        let taskAlerts = {};
+
+        function renderPRDTasks(prd, currentSimStatus) {
+            // Remove o placeholder se há tarefas para mostrar
+            const placeholder = document.querySelector('.task-placeholder');
+            if (placeholder && prd && prd[0] && prd[0].tasks && prd[0].tasks.length > 0) {
+                placeholder.style.display = 'none';
+            } else if (placeholder && (!prd || !prd[0] || !prd[0].tasks || prd[0].tasks.length === 0)) {
+                placeholder.style.display = 'block';
+                return; // Não renderiza tarefas se não há dados
+            }
+            
+            let html = '<ul class="task-cards-list">';
+            prdActivities.forEach(task => {
+                const isUserResponsible = user && user.role && String(task.responsible).toLowerCase() === String(user.role).toLowerCase();
+                // Corrige bug: completedTasks deve ser sincronizado com backend
+                const isCompleted = prd && prd[0] && prd[0].tasks ? prd[0].tasks.find(t => t.id === task.id && t.completed) : false;
+                const roleDisplay = task.responsible === 'ti' ? 'TI' : task.responsible === 'comunicacao' ? 'Comunicação' : 'Infraestrutura';
+                
+                // Verifica se todas as dependências da tarefa foram concluídas
+                const dependenciesCompleted = task.dependencies ? task.dependencies.every(depId => {
+                    return prd && prd[0] && prd[0].tasks && prd[0].tasks.find(t => t.id === depId && t.completed);
+                }) : true;
+                
+                // Inicia o timer se a tarefa está disponível para o usuário e ainda não foi iniciada
+                if (isUserResponsible && !isCompleted && dependenciesCompleted && currentSimStatus === 'active') {
+                    startTaskTimer(task.id, task.estimatedTime);
+                }
+
+                html += `
+                    <li class="task-card${isCompleted ? ' completed' : ''} ${isUserResponsible ? ' user-responsible' : ''}">
+                        <div class="task-status-indicator">
+                            <i class="fas ${isCompleted ? 'fa-check-circle' : 'fa-clock'}"></i>
+                        </div>
+                        <div class="task-details">
+                            <div class="task-header">
+                                <strong>${task.name}</strong>
+                                <span class="task-number">#${task.id}</span>
+                            </div>
+                            <div class="task-meta">
+                                <span class="task-responsible">
+                                    <i class="fas fa-user"></i>
+                                    ${roleDisplay}
+                                </span>
+                                <span class="task-time">
+                                    <i class="fas fa-clock"></i>
+                                    ${task.estimatedTime} min
+                                </span>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button data-task-id="${task.id}" data-responsible-id="${task.responsible}" class="mark-complete-btn ${isCompleted ? 'completed' : ''}" ${!isUserResponsible || isCompleted ? 'disabled' : ''}>
+                                <i class="fas ${isCompleted ? 'fa-check' : 'fa-play'}"></i>
+                                ${isCompleted ? 'Concluída' : (isUserResponsible ? 'Marcar como Concluída' : 'Aguardando')}
+                            </button>
+                        </div>
+                    </li>
+                `;
+            });
+            html += '</ul>';
+            prdTasksDisplay.innerHTML = html;
+
+            document.querySelectorAll('.task-list button').forEach(button => {
+                button.onclick = async (event) => {
+                    const taskId = parseInt(event.target.dataset.taskId);
+                    const responsibleId = String(user.role || '').toLowerCase();
+                    
+                    // Adicionar feedback visual imediato
+                    const button = event.target;
+                    const originalText = button.innerHTML;
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+                    button.disabled = true;
+                    
+                    try {
+                        await completeTask(taskId, responsibleId);
+                    } catch (error) {
+                        // Restaurar botão em caso de erro
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }
+                };
+            });
+        }
+
+        async function getSimulationStatus() {
+            const statusData = await callApi('GET', `${API_BASE_URL}/status`);
+            updateStatusDisplay(statusData);
+        }
+
+        async function completeTask(taskId, responsibleId) {
+            try {
+                const result = await callApi('POST', `${API_BASE_URL}/task/complete`, { taskId, responsibleId });
+                if (result) {
+                    showMessage('success', result.message);
+                    getSimulationStatus(); // Todos usuários verão imediatamente
+                }
+            } catch (error) {
+                console.error('Erro ao completar tarefa:', error);
+                showMessage('error', 'Erro ao completar tarefa. Tente novamente.');
+            }
+        }
+
+
+
+    function startSimulationStatusPolling() {
+        if (simulationInterval) {
+            clearInterval(simulationInterval);
+        }
+        simulationInterval = setInterval(getSimulationStatus, 2000);
+        getSimulationStatus();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Configurar event listeners dos botões
+        const cancelButton = document.getElementById('cancelButton');
+        const cancelForm = document.getElementById('cancelForm');
+        const confirmCancelButton = document.getElementById('confirmCancelButton');
+        const cancelCancelButton = document.getElementById('cancelCancelButton');
+        const cancelReasonInput = document.getElementById('cancelReason');
+        const cancelStageInput = document.getElementById('cancelStage');
+        
+        if (cancelButton) {
+            cancelButton.onclick = () => {
+                if (cancelForm) {
+                    cancelForm.style.display = 'block';
+                    cancelButton.disabled = true;
+                }
+            };
+        }
+
+        if (cancelCancelButton) {
+            cancelCancelButton.onclick = () => {
+                if (cancelForm) {
+                    cancelForm.style.display = 'none';
+                }
+                if (cancelButton) {
+                    cancelButton.disabled = false;
+                }
+                if (cancelReasonInput) {
+                    cancelReasonInput.value = '';
+                }
+                if (cancelStageInput) {
+                    cancelStageInput.value = '';
+                }
+            };
+        }
+
+        if (confirmCancelButton) {
+            confirmCancelButton.onclick = async () => {
+                const reason = cancelReasonInput ? (cancelReasonInput.value || 'Motivo não especificado') : 'Motivo não especificado';
+                const stage = cancelStageInput ? (cancelStageInput.value || 'Etapa não especificada') : 'Etapa não especificada';
+                
+                const result = await callApi('POST', `${API_BASE_URL}/cancel`, { reason, currentStage: stage });
+                if (result) {
+                    showMessage('success', result.message);
+                    if (cancelForm) {
+                        cancelForm.style.display = 'none';
+                    }
+                    if (cancelReasonInput) {
+                        cancelReasonInput.value = '';
+                    }
+                    if (cancelStageInput) {
+                        cancelStageInput.value = '';
+                    }
+                    getSimulationStatus();
+                }
+            };
+        }
+        
+        // Event listener para o botão de gerar relatório
+        const generateReportButton = document.getElementById('generateReportButton');
+        const finalReportOutput = document.getElementById('finalReportOutput');
+        
+        if (generateReportButton) {
+            generateReportButton.onclick = async () => {
+                const report = await callApi('GET', `${API_BASE_URL}/report`);
+                if (report) {
+                    let reportText = `RELATÓRIO FINAL DA SIMULAÇÃO DE CRISE (${report.simulationId})\n`;
+                    reportText += `-----------------------------------------------------------\n`;
+                    reportText += `Status Final: ${report.statusFinal}\n`;
+                    reportText += `Início da Simulação: ${report.startTime}\n`;
+                    reportText += `Fim da Simulação: ${report.endTime}\n`;
+                    reportText += `Tempo Total Consumido: ${report.totalTimeElapsedMinutes} minutos\n`;
+                    reportText += `RTO Definido: ${report.rtoDefinedMinutes} minutos\n`;
+                    reportText += `Status do RTO: ${report.rtoStatus}\n`;
+                    if (report.estimatedLoss && report.estimatedLoss !== 'R$ 0,00') {
+                        reportText += `Perda Estimada: ${report.estimatedLoss}\n`;
+                    }
+                    reportText += `\n--- Detalhes da Crise ---\n`;
+                    reportText += `Cargo do Notificador: ${report.crisisFormDetails.role || 'N/A'}\n`;
+                    reportText += `Tipo de Crise: ${report.crisisFormDetails.type || 'N/A'}\n`;
+                    reportText += `Causa da Crise: ${report.crisisFormDetails.cause || 'N/A'}\n`;
+                    reportText += `\n--- Tempo de Execução Real por Atividade ---\n`;
+                    report.tables.realExecutionTime.forEach(t => {
+                        reportText += `ID: ${t.taskId}, Nome: ${t.name}, Responsável: ${t.responsible}, Tempo Real: ${t.actualTime} min, Concluída: ${t.completed ? 'Sim' : 'Não'}\n`;
+                    });
+                    reportText += `\n--- Comparativo entre Tempo Real e Estimado ---\n`;
+                    if (report.tables.comparison.extrapolatedActivities.length > 0) {
+                        reportText += `Atividades que extrapolaram:\n`;
+                        report.tables.comparison.extrapolatedActivities.forEach(a => {
+                            reportText += `  - ${a.name} (Responsável: ${a.responsible}): Estimado ${a.estimated} min, Real ${a.actual} min (Excedeu ${a.delta} min)\n`;
+                        });
+                    } else {
+                        reportText += `Nenhuma atividade extrapolou o tempo estimado.\n`;
+                    }
+                    if (report.tables.comparison.optimizedActivities.length > 0) {
+                        reportText += `Atividades otimizadas:\n`;
+                        report.tables.comparison.optimizedActivities.forEach(a => {
+                            reportText += `  - ${a.name} (Responsável: ${a.responsible}): Estimado ${a.estimated} min, Real ${a.actual} min (Otimizou ${a.delta} min)\n`;
+                        });
+                    } else {
+                        reportText += `Nenhuma atividade foi otimizada em relação ao tempo estimado.\n`;
+                    }
+                    reportText += `\n--- Sugestões Automáticas ---\n`;
+                    if (report.suggestions && report.suggestions.length > 0) {
+                        report.suggestions.forEach(s => {
+                            reportText += `- ${s}\n`;
+                        });
+                    } else {
+                        reportText += `Nenhuma sugestão gerada automaticamente.\n`;
+                    }
+                    
+                    if (finalReportOutput) {
+                        finalReportOutput.textContent = reportText;
+                        showMessage('success', 'Relatório final gerado com sucesso.');
+                    }
+                }
+            };
+        }
+        
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('state') === 'active') {
+            getSimulationStatus();
+            startSimulationStatusPolling();
+        } else {
+            updateStatusDisplay(null);
+        }
+    });
+</script>
+
+<!-- AOS Animation Library -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    // Initialize AOS
+    AOS.init({
+        duration: 800,
+        easing: 'ease-in-out',
+        once: true,
+        offset: 100
+    });
+</script>
+</body>
+</html>

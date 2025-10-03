@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Crise - Home</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="home-style.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-navbar">
+        <div class="dashboard-brand">
+            <div class="dashboard-logo">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="brand-text">
+                <span class="dashboard-title">Sistema de Crise</span>
+                <span class="dashboard-subtitle">Painel de Controle</span>
+            </div>
+        </div>
+        <div class="dashboard-user">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span id="userInfo"></span>
+            </div>
+            <button id="logoutButton" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                Sair
+            </button>
+        </div>
+    </div>
+
+    <div class="dashboard-main">
+        <div class="dashboard-sidebar">
+            <div class="sidebar-section">
+                <h3><i class="fas fa-bars"></i> Menu</h3>
+                <ul id="sidebarMenu">
+                    <li id="dashboardTab" class="tab-item active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </li>
+                    <li id="prdTab" class="tab-item">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>PRD</span>
+                    </li>
+                    <li id="statsTab" class="tab-item">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Estatísticas</span>
+                    </li>
+                    <li id="startCrisisBtn" class="start-crisis">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Iniciar Nova Crise</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <div id="crisisVoteBtn" class="active-crisis-btn" style="display:none;" data-aos="fade-down">
+                <div class="pulse"></div>
+                <i class="fas fa-vote-yea"></i>
+                <span>Votação de Crise Ativa</span>
+            </div>
+            <div id="crisisVoteModal" class="modal-bg" style="display:none;">
+                <div class="modal-content" data-aos="zoom-in">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-vote-yea"></i> Votação de Crise</h2>
+                        <button type="button" id="closeVoteModalBtn" class="btn-close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="crisisVoteDetails"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="voteYesBtn" class="btn btn-danger">
+                            <i class="fas fa-check"></i>
+                            Confirmar Crise
+                        </button>
+                        <button id="voteNoBtn" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                            Acidente
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="startCrisisModal" class="modal-bg" style="display:none;">
+                <div class="modal-content" data-aos="zoom-in">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-exclamation-triangle"></i> Iniciar Nova Crise</h2>
+                        <button type="button" id="closeModalBtn" class="btn-close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="crisisInstructions" class="alert alert-warning" style="display:none;">
+                            <i class="fas fa-info-circle"></i>
+                            <span></span>
+                        </div>
+                        <form id="startCrisisForm">
+                            <div class="form-group">
+                                <label for="crisisScenarioModal">
+                                    <i class="fas fa-list-alt"></i>
+                                    Cenário da Crise
+                                </label>
+                                <select id="crisisScenarioModal" required>
+                                    <option value="">Selecione um cenário</option>
+                                    <option value="cenario1">Cenário 1</option>
+                                    <option value="cenario2" disabled>Cenário 2 (Em breve)</option>
+                                    <option value="cenario3" disabled>Cenário 3 (Em breve)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="crisisCauseModal">
+                                    <i class="fas fa-align-left"></i>
+                                    Descrição da Crise
+                                </label>
+                                <textarea id="crisisCauseModal" rows="4" required placeholder="Descreva detalhadamente a situação da crise..."></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="validateCrisisBtn" class="btn btn-warning" style="display:none;">
+                            <i class="fas fa-check-circle"></i>
+                            Validar Crise
+                        </button>
+                        <button type="button" id="startCrisisSubmitBtn" class="btn btn-primary" style="display:none;">
+                            <i class="fas fa-play"></i>
+                            Iniciar e Votar
+                        </button>
+                        <button type="button" id="closeModalBtn" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de Validação de Crise -->
+            <div id="crisisValidationModal" class="modal-bg" style="display:none;">
+                <div class="modal-content validation-modal" data-aos="zoom-in">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-clipboard-check"></i> Validação de Crise - Cenário 1</h2>
+                        <button type="button" id="closeValidationModalBtn" class="btn-close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body validation-body">
+                        <div class="validation-cards">
+                            <!-- Card 1: Iniciar processo de validação -->
+                            <div class="validation-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-play-circle"></i> 1. Iniciar o processo de validação</h3>
+                                    <span class="status-badge status-in-progress">Em andamento</span>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: Confirmar natureza do problema -->
+                            <div class="validation-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-question-circle"></i> 2. Confirmar a natureza do problema</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div class="form-group">
+                                        <label>O problema está ocorrendo conforme especificado?</label>
+                                        <div class="radio-group">
+                                            <label class="radio-option">
+                                                <input type="radio" name="problemNature" value="sim">
+                                                <span>Sim</span>
+                                            </label>
+                                            <label class="radio-option">
+                                                <input type="radio" name="problemNature" value="nao">
+                                                <span>Não</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <textarea placeholder="Descreva detalhadamente..." rows="3"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 3: Acionar times de contingência -->
+                            <div class="validation-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-users"></i> 3. Acionar os times de Contingência do Produto</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div class="form-group">
+                                        <textarea placeholder="Acionado a equipe de banco de dados, equipe de infraestrutura e equipe de negócio" rows="3"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 4: Simular problemas em ambiente de teste -->
+                            <div class="validation-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-flask"></i> 4. Simular os problemas em um ambiente de teste</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div class="form-group">
+                                        <div class="checkbox-group">
+                                            <label class="checkbox-option">
+                                                <input type="checkbox" name="testSimulation">
+                                                <span>Foi simulado o problema no ambiente de teste</span>
+                                            </label>
+                                            <label class="checkbox-option">
+                                                <input type="checkbox" name="testNotApplicable">
+                                                <span>Não se aplica</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 5: Determinar origem do problema -->
+                            <div class="validation-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-search"></i> 5. Determinar a origem do problema</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div class="form-group">
+                                        <textarea placeholder="Foi identificado o problema da indisponibilidade do produto" rows="3"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 6: Análise detalhada -->
+                            <div class="validation-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-microscope"></i> 6. Realizar uma análise detalhada do problema</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div class="form-group">
+                                        <textarea placeholder="Durante a análise foi identificado o possível problema: A falha pode estar relacionada a uma recente atualização do produto que corrompeu a base de dados dos clientes. Todos os bancos de dados foram corrompidos." rows="4"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 7: Analisar tickets -->
+                            <div class="validation-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-ticket-alt"></i> 7. Analisar os tickets de chamados</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div class="form-group">
+                                        <textarea placeholder="Foi analisado o grande volume de chamados com o mesmo incidente" rows="3"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 8: Criar ticket problema -->
+                            <div class="validation-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-plus-circle"></i> 8. Criar um Ticket Problema</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div class="form-group">
+                                        <div class="checkbox-group">
+                                            <label class="checkbox-option">
+                                                <input type="checkbox" name="ticketCreated">
+                                                <span>Sim - Criado o ticket de problema</span>
+                                            </label>
+                                            <label class="checkbox-option">
+                                                <input type="checkbox" name="ticketNotCreated">
+                                                <span>Não</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 9: Constatar comprometimento -->
+                            <div class="validation-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-database"></i> 9. Constatar o cenário de comprometimento dos Bancos de Dados dos clientes</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div class="form-group">
+                                        <textarea placeholder="Foi identificado banco de dados corrompido" rows="3"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 10: Retirar serviço do ar -->
+                            <div class="validation-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-power-off"></i> 10. Retirar o serviço do ar</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div class="form-group">
+                                        <div class="checkbox-group">
+                                            <label class="checkbox-option">
+                                                <input type="checkbox" name="serviceDown">
+                                                <span>Sim - Desativado o serviço no ambiente publicado</span>
+                                            </label>
+                                            <label class="checkbox-option">
+                                                <input type="checkbox" name="serviceNotDown">
+                                                <span>Não</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 11: Comunicar líder -->
+                            <div class="validation-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-bullhorn"></i> 11. Comunicar a situação ao líder de contingência</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div class="form-group">
+                                        <div class="checkbox-group">
+                                            <label class="checkbox-option">
+                                                <input type="checkbox" name="leaderNotified">
+                                                <span>Sim - Líder foi comunicado do incidente</span>
+                                            </label>
+                                            <label class="checkbox-option">
+                                                <input type="checkbox" name="leaderNotNotified">
+                                                <span>Não</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 12: Exibir mensagem amigável -->
+                            <div class="validation-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-comment-dots"></i> 12. Exibir uma mensagem amigável aos clientes</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div class="form-group">
+                                        <div class="checkbox-group">
+                                            <label class="checkbox-option">
+                                                <input type="checkbox" name="friendlyMessage">
+                                                <span>Sim - No endereço publicado</span>
+                                            </label>
+                                            <label class="checkbox-option">
+                                                <input type="checkbox" name="noFriendlyMessage">
+                                                <span>Não</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="declineCrisisBtn" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                            Declinar Crise
+                        </button>
+                        <button type="button" id="declareCrisisBtn" class="btn btn-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Declarar Crise (Todos os campos obrigatórios)
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="dashboardView">
+                <div class="dashboard-header">
+                    <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+                    <p class="dashboard-subtitle">Visão geral do sistema de gerenciamento de crises</p>
+                </div>
+                <div class="dashboard-cards">
+                    <div class="dashboard-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-title">Crises Registradas</div>
+                            <div class="card-value" id="totalCrises">...</div>
+                            <div class="card-sub">
+                                <i class="fas fa-arrow-up"></i>
+                                +3.48% desde o mês passado
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-title">Novos Usuários</div>
+                            <div class="card-value" id="newUsers">...</div>
+                            <div class="card-sub">
+                                <i class="fas fa-arrow-up"></i>
+                                +20.4% desde o mês passado
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-title">Crises no Último Mês</div>
+                            <div class="card-value" id="crisesLastMonth">...</div>
+                            <div class="card-sub">
+                                <i class="fas fa-arrow-up"></i>
+                                +12% desde o mês passado
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card" data-aos="fade-up" data-aos-delay="400">
+                        <div class="card-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-title">Tempo Médio de Crise</div>
+                            <div class="card-value" id="avgCrisisTime">...</div>
+                            <div class="card-sub">minutos</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard-graph-section" data-aos="fade-up" data-aos-delay="500">
+                    <div class="section-header">
+                        <h2 class="graph-title">
+                            <i class="fas fa-chart-line"></i>
+                            Relatório Mensal de Crises
+                        </h2>
+                        <div class="graph-controls">
+                            <button class="btn btn-sm btn-outline">
+                                <i class="fas fa-download"></i>
+                                Exportar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="crisisChart" height="120"></canvas>
+                    </div>
+                </div>
+                <div class="dashboard-products" data-aos="fade-up" data-aos-delay="600">
+                    <div class="section-header">
+                        <h2 class="products-title">
+                            <i class="fas fa-list"></i>
+                            Crises Mais Comuns
+                        </h2>
+                    </div>
+                    <ul id="commonCrisesList" class="products-list"></ul>
+                </div>
+            </div>
+
+            <div id="prdView" style="display:none;">
+                <div class="dashboard-header">
+                    <h1><i class="fas fa-clipboard-list"></i> PRD em Andamento</h1>
+                    <p class="dashboard-subtitle">Acompanhe o progresso do Plano de Resposta a Desastres</p>
+                </div>
+                <div class="prd-status-card" data-aos="fade-up">
+                    <div class="status-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="status-content">
+                        <p id="prdStatusText">...</p>
+                        <button id="goToPrdPageBtn" class="btn btn-primary" style="display:none;">
+                            <i class="fas fa-external-link-alt"></i>
+                            Acessar Painel de PRD
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="statsView" style="display:none;">
+                <div class="dashboard-header">
+                    <h1><i class="fas fa-chart-bar"></i> Estatísticas</h1>
+                    <p class="dashboard-subtitle">Análise detalhada dos dados do sistema</p>
+                </div>
+                <div class="dashboard-cards">
+                    <div class="dashboard-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-title">Total de Crises</div>
+                            <div class="card-value" id="totalCrisesStats">...</div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-title">Crises no Último Mês</div>
+                            <div class="card-value" id="crisesLastMonthStats">...</div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="card-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-title">Tempo Médio de Crise</div>
+                            <div class="card-value" id="avgCrisisTimeStats">...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard-products" data-aos="fade-up" data-aos-delay="400">
+                    <div class="section-header">
+                        <h2 class="products-title">
+                            <i class="fas fa-list"></i>
+                            Crises Mais Comuns
+                        </h2>
+                    </div>
+                    <ul id="commonCrisesListStats" class="products-list"></ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        const isAuthenticated = localStorage.getItem('isAuthenticated');
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!isAuthenticated || !user) {
+            window.location.href = '/';
+        }
+        document.getElementById('userInfo').textContent = `Usuário: ${user.name} (${user.role})`;
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = '/';
+        });
+
+        const API_BASE_URL_SIM = 'http://localhost:3000/api/simulation';
+        const API_BASE_URL_AUTH = 'http://localhost:3000/api/auth';
+        
+        // Elementos da UI
+        const startCrisisBtn = document.getElementById('startCrisisBtn');
+        const startCrisisModal = document.getElementById('startCrisisModal');
+        const startCrisisForm = document.getElementById('startCrisisForm');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const crisisScenarioModal = document.getElementById('crisisScenarioModal');
+        const crisisCauseModal = document.getElementById('crisisCauseModal');
+        const validateCrisisBtn = document.getElementById('validateCrisisBtn');
+        const startCrisisSubmitBtn = document.getElementById('startCrisisSubmitBtn');
+        const crisisValidationModal = document.getElementById('crisisValidationModal');
+        const closeValidationModalBtn = document.getElementById('closeValidationModalBtn');
+        const declineCrisisBtn = document.getElementById('declineCrisisBtn');
+        const declareCrisisBtn = document.getElementById('declareCrisisBtn');
+        const goToPrdPageBtn = document.getElementById('goToPrdPageBtn');
+
+        const totalCrisesDisplay = document.getElementById('totalCrises');
+        const crisesLastMonthDisplay = document.getElementById('crisesLastMonth');
+        const avgCrisisTimeDisplay = document.getElementById('avgCrisisTime');
+        const commonCrisesList = document.getElementById('commonCrisesList');
+
+        const totalCrisesStatsDisplay = document.getElementById('totalCrisesStats');
+        const crisesLastMonthStatsDisplay = document.getElementById('crisesLastMonthStats');
+        const avgCrisisTimeStatsDisplay = document.getElementById('avgCrisisTimeStats');
+        const commonCrisesListStats = document.getElementById('commonCrisesListStats');
+
+        const prdStatusText = document.getElementById('prdStatusText');
+        const dashboardView = document.getElementById('dashboardView');
+        const prdView = document.getElementById('prdView');
+        const statsView = document.getElementById('statsView');
+        const tabItems = document.querySelectorAll('.tab-item');
+
+        // Estado da UI
+        let isVoteModalOpen = false;
+        let simulationStatusInterval = null;
+
+        async function callApi(method, endpoint, data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                };
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                const response = await fetch(endpoint, options);
+                
+                // Se for 404, retorna null em vez de erro para indicar "não encontrado"
+                if (response.status === 404) {
+                    return null;
+                }
+                
+                if (!response.ok) {
+                    const errorResult = await response.json();
+                    throw new Error(errorResult.message || `Erro HTTP: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Erro na requisição API:', error);
+                return { error: error.message };
+            }
+        }
+
+        async function fetchStats() {
+            const stats = await callApi('GET', `${API_BASE_URL_SIM}/stats`);
+            if (stats && !stats.error) {
+                totalCrisesDisplay.textContent = stats.totalCrises;
+                crisesLastMonthDisplay.textContent = stats.crisesInPeriod;
+                avgCrisisTimeDisplay.textContent = `${stats.avgCrisisTime} min`;
+                totalCrisesStatsDisplay.textContent = stats.totalCrises;
+                crisesLastMonthStatsDisplay.textContent = stats.crisesInPeriod;
+                avgCrisisTimeStatsDisplay.textContent = `${stats.avgCrisisTime} min`;
+
+                const ctx = document.getElementById('crisisChart').getContext('2d');
+                const chartData = {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Crises',
+                        data: stats.monthlyCrises || [2, 3, 1, 4, 2, 5, 3, 2, 4, 3, 5, 4],
+                        backgroundColor: 'rgba(92,107,192,0.2)',
+                        borderColor: '#5c6bc0',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#5c6bc0',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                };
+                if (window.crisisChartInstance) window.crisisChartInstance.destroy();
+                window.crisisChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: chartData,
+                    options: {
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: '#444466' } },
+                            x: { grid: { color: '#444466' } }
+                        }
+                    }
+                });
+
+                commonCrisesList.innerHTML = '';
+                commonCrisesListStats.innerHTML = '';
+                for (const type in stats.commonCrises) {
+                    const li = document.createElement('li');
+                    li.textContent = `${type}: ${stats.commonCrises[type]}`;
+                    commonCrisesList.appendChild(li);
+                    commonCrisesListStats.appendChild(li.cloneNode(true));
+                }
+            }
+        }
+
+        async function checkSimulationStatus() {
+            try {
+                const statusData = await callApi('GET', `${API_BASE_URL_SIM}/status`);
+                const crisisVoteBtn = document.getElementById('crisisVoteBtn');
+                const startCrisisBtn = document.getElementById('startCrisisBtn');
+                const sidebarMenu = document.getElementById('sidebarMenu');
+                let prdSidebarBtn = document.getElementById('prdSidebarBtn');
+
+                const resetToDefaultState = () => {
+                    startCrisisBtn.style.display = 'block';
+                    crisisVoteBtn.style.display = 'none';
+                    prdStatusText.textContent = 'Nenhuma simulação ativa.';
+                    prdSidebarBtn = document.getElementById('prdSidebarBtn');
+                    if (prdSidebarBtn) {
+                        prdSidebarBtn.remove();
+                    }
+                };
+
+                // Se não há simulação ativa (404), reseta para estado padrão
+                if (!statusData || statusData.error) {
+                    resetToDefaultState();
+                    return;
+                }
+
+            switch (statusData.overallStatus) {
+                case 'pending_vote':
+                    startCrisisBtn.style.display = 'none';
+                    
+                    // --- CORREÇÃO APLICADA AQUI ---
+                    // O botão de votação agora é exibido para TODOS durante a votação,
+                    // incluindo o usuário que iniciou a crise, permitindo que ele vote.
+                    crisisVoteBtn.style.display = 'inline-flex';
+                    
+                    prdSidebarBtn = document.getElementById('prdSidebarBtn');
+                    if (prdSidebarBtn) prdSidebarBtn.remove();
+                    prdStatusText.textContent = 'Votação em andamento...';
+                    break;
+                
+                case 'awaiting_details':
+                case 'active':
+                    startCrisisBtn.style.display = 'none';
+                    crisisVoteBtn.style.display = 'none';
+                    prdStatusText.textContent = 'PRD em andamento!';
+                    goToPrdPageBtn.style.display = 'block';
+                    
+                    prdSidebarBtn = document.getElementById('prdSidebarBtn');
+                    if (!prdSidebarBtn) {
+                        prdSidebarBtn = document.createElement('li');
+                        prdSidebarBtn.id = 'prdSidebarBtn';
+                        prdSidebarBtn.className = 'tab-item access-prd-btn';
+                        prdSidebarBtn.textContent = 'Acessar PRD';
+                        prdSidebarBtn.onclick = () => { 
+                            // Garante que o usuário atual seja mantido ao redirecionar
+                            const currentUser = JSON.parse(localStorage.getItem('user'));
+                            
+                            // Validação adicional para garantir que é o usuário correto
+                            if (!currentUser || !currentUser.username) {
+                                window.location.href = '/';
+                                return;
+                            }
+                            
+                            // Salva múltiplas vezes para garantir persistência
+                            localStorage.setItem('user', JSON.stringify(currentUser));
+                            localStorage.setItem('userBackup', JSON.stringify(currentUser));
+                            localStorage.setItem('lastValidUser', JSON.stringify(currentUser));
+                            
+                            // Adiciona um pequeno delay para garantir que o localStorage seja salvo
+                            setTimeout(() => {
+                                window.location.href = '/index.html?state=active';
+                            }, 100);
+                        };
+                        sidebarMenu.appendChild(prdSidebarBtn);
+                    }
+                    break;
+
+                case 'cancelled_by_vote':
+                case 'cancelled_manual':
+                case 'completed_in_rto':
+                case 'completed_out_of_rto':
+                default:
+                    resetToDefaultState();
+                    break;
+            }
+            } catch (error) {
+                console.log('Nenhuma simulação ativa - estado padrão');
+                const resetToDefaultState = () => {
+                    document.getElementById('startCrisisBtn').style.display = 'block';
+                    document.getElementById('crisisVoteBtn').style.display = 'none';
+                    document.getElementById('prdStatusText').textContent = 'Nenhuma simulação ativa.';
+                    const prdSidebarBtn = document.getElementById('prdSidebarBtn');
+                    if (prdSidebarBtn) {
+                        prdSidebarBtn.remove();
+                    }
+                };
+                resetToDefaultState();
+            }
+        }
+
+        function openTab(evt, tabName) {
+            document.querySelectorAll('.sidebar-section .tab-item').forEach(item => item.classList.remove('active'));
+            evt.currentTarget.classList.add('active');
+
+            dashboardView.style.display = 'none';
+            prdView.style.display = 'none';
+            statsView.style.display = 'none';
+
+            if (tabName === 'dashboardTab') dashboardView.style.display = 'block';
+            if (tabName === 'prdTab') prdView.style.display = 'block';
+            if (tabName === 'statsTab') statsView.style.display = 'block';
+        }
+
+        startCrisisBtn.onclick = () => {
+            startCrisisModal.style.display = 'flex';
+        };
+
+        closeModalBtn.onclick = () => startCrisisModal.style.display = 'none';
+        
+        // Controlar exibição dos botões baseado na seleção do cenário
+        crisisScenarioModal.addEventListener('change', function() {
+            const selectedScenario = this.value;
+            if (selectedScenario === 'cenario1') {
+                validateCrisisBtn.style.display = 'inline-flex';
+                startCrisisSubmitBtn.style.display = 'none';
+            } else {
+                validateCrisisBtn.style.display = 'none';
+                startCrisisSubmitBtn.style.display = 'none';
+            }
+        });
+        
+        // Event listeners para o modal de validação
+        validateCrisisBtn.onclick = () => {
+            const crisisScenario = crisisScenarioModal.value;
+            const crisisCause = crisisCauseModal.value.trim();
+            
+            if (!crisisScenario || !crisisCause) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            // Armazenar dados da crise para uso posterior
+            window.crisisData = {
+                scenario: crisisScenario,
+                type: 'Crise Validada', // Tipo padrão baseado na validação
+                cause: crisisCause,
+                initiatedBy: user.username,
+                initiatedAt: new Date().toISOString()
+            };
+            
+            // Fechar modal de crise e abrir modal de validação
+            startCrisisModal.style.display = 'none';
+            crisisValidationModal.style.display = 'flex';
+        };
+        
+        closeValidationModalBtn.onclick = () => {
+            crisisValidationModal.style.display = 'none';
+        };
+        
+        // Função para coletar dados de validação
+        function collectValidationData() {
+            const validationData = {
+                problemNature: document.querySelector('input[name="problemNature"]:checked')?.value || '',
+                problemNatureText: document.querySelectorAll('.validation-card')[1]?.querySelector('textarea')?.value || '',
+                contingencyTeams: document.querySelectorAll('.validation-card')[2]?.querySelector('textarea')?.value || '',
+                testSimulation: document.querySelector('input[name="testSimulation"]')?.checked || false,
+                testNotApplicable: document.querySelector('input[name="testNotApplicable"]')?.checked || false,
+                problemOrigin: document.querySelectorAll('.validation-card')[4]?.querySelector('textarea')?.value || '',
+                detailedAnalysis: document.querySelectorAll('.validation-card')[5]?.querySelector('textarea')?.value || '',
+                ticketAnalysis: document.querySelectorAll('.validation-card')[6]?.querySelector('textarea')?.value || '',
+                ticketCreated: document.querySelector('input[name="ticketCreated"]')?.checked || false,
+                ticketNotCreated: document.querySelector('input[name="ticketNotCreated"]')?.checked || false,
+                databaseCompromise: document.querySelectorAll('.validation-card')[8]?.querySelector('textarea')?.value || '',
+                serviceDown: document.querySelector('input[name="serviceDown"]')?.checked || false,
+                serviceNotDown: document.querySelector('input[name="serviceNotDown"]')?.checked || false,
+                leaderNotified: document.querySelector('input[name="leaderNotified"]')?.checked || false,
+                leaderNotNotified: document.querySelector('input[name="leaderNotNotified"]')?.checked || false,
+                friendlyMessage: document.querySelector('input[name="friendlyMessage"]')?.checked || false,
+                noFriendlyMessage: document.querySelector('input[name="noFriendlyMessage"]')?.checked || false,
+                validatedAt: new Date().toISOString(),
+                validatedBy: user.username
+            };
+            return validationData;
+        }
+        
+        // Função para validar se todos os campos obrigatórios estão preenchidos
+        function validateRequiredFields() {
+            const errors = [];
+            
+            // Card 2: Confirmar natureza do problema
+            const problemNature = document.querySelector('input[name="problemNature"]:checked');
+            const problemNatureText = document.querySelectorAll('.validation-card')[1]?.querySelector('textarea')?.value.trim();
+            if (!problemNature) {
+                errors.push('Card 2: Selecione se o problema está ocorrendo conforme especificado');
+            }
+            if (!problemNatureText) {
+                errors.push('Card 2: Descreva detalhadamente a natureza do problema');
+            }
+            
+            // Card 3: Acionar times de contingência
+            const contingencyTeams = document.querySelectorAll('.validation-card')[2]?.querySelector('textarea')?.value.trim();
+            if (!contingencyTeams) {
+                errors.push('Card 3: Descreva quais times foram acionados');
+            }
+            
+            // Card 4: Simular problemas em ambiente de teste
+            const testSimulation = document.querySelector('input[name="testSimulation"]')?.checked;
+            const testNotApplicable = document.querySelector('input[name="testNotApplicable"]')?.checked;
+            if (!testSimulation && !testNotApplicable) {
+                errors.push('Card 4: Selecione uma opção para simulação em ambiente de teste');
+            }
+            
+            // Card 5: Determinar origem do problema
+            const problemOrigin = document.querySelectorAll('.validation-card')[4]?.querySelector('textarea')?.value.trim();
+            if (!problemOrigin) {
+                errors.push('Card 5: Descreva a origem identificada do problema');
+            }
+            
+            // Card 6: Análise detalhada
+            const detailedAnalysis = document.querySelectorAll('.validation-card')[5]?.querySelector('textarea')?.value.trim();
+            if (!detailedAnalysis) {
+                errors.push('Card 6: Descreva a análise detalhada realizada');
+            }
+            
+            // Card 7: Analisar tickets
+            const ticketAnalysis = document.querySelectorAll('.validation-card')[6]?.querySelector('textarea')?.value.trim();
+            if (!ticketAnalysis) {
+                errors.push('Card 7: Descreva a análise dos tickets de chamados');
+            }
+            
+            // Card 8: Criar ticket problema
+            const ticketCreated = document.querySelector('input[name="ticketCreated"]')?.checked;
+            const ticketNotCreated = document.querySelector('input[name="ticketNotCreated"]')?.checked;
+            if (!ticketCreated && !ticketNotCreated) {
+                errors.push('Card 8: Selecione se o ticket de problema foi criado');
+            }
+            
+            // Card 9: Constatar comprometimento
+            const databaseCompromise = document.querySelectorAll('.validation-card')[8]?.querySelector('textarea')?.value.trim();
+            if (!databaseCompromise) {
+                errors.push('Card 9: Descreva o comprometimento dos bancos de dados');
+            }
+            
+            // Card 10: Retirar serviço do ar
+            const serviceDown = document.querySelector('input[name="serviceDown"]')?.checked;
+            const serviceNotDown = document.querySelector('input[name="serviceNotDown"]')?.checked;
+            if (!serviceDown && !serviceNotDown) {
+                errors.push('Card 10: Selecione se o serviço foi retirado do ar');
+            }
+            
+            // Card 11: Comunicar líder
+            const leaderNotified = document.querySelector('input[name="leaderNotified"]')?.checked;
+            const leaderNotNotified = document.querySelector('input[name="leaderNotNotified"]')?.checked;
+            if (!leaderNotified && !leaderNotNotified) {
+                errors.push('Card 11: Selecione se o líder foi comunicado');
+            }
+            
+            // Card 12: Exibir mensagem amigável
+            const friendlyMessage = document.querySelector('input[name="friendlyMessage"]')?.checked;
+            const noFriendlyMessage = document.querySelector('input[name="noFriendlyMessage"]')?.checked;
+            if (!friendlyMessage && !noFriendlyMessage) {
+                errors.push('Card 12: Selecione se a mensagem amigável foi exibida');
+            }
+            
+            return errors;
+        }
+        
+        // Função para destacar campos com erro
+        function highlightErrors(errors) {
+            // Remover destaques anteriores
+            document.querySelectorAll('.validation-card').forEach(card => {
+                card.classList.remove('error-highlight');
+            });
+            
+            // Destacar cards com erro
+            errors.forEach(error => {
+                const cardNumber = error.match(/Card (\d+)/)?.[1];
+                if (cardNumber) {
+                    const cardIndex = parseInt(cardNumber) - 1;
+                    const card = document.querySelectorAll('.validation-card')[cardIndex];
+                    if (card) {
+                        card.classList.add('error-highlight');
+                    }
+                }
+            });
+        }
+        
+        // Função para remover destaques de erro quando o usuário interage
+        function removeErrorHighlights() {
+            document.querySelectorAll('.validation-card').forEach(card => {
+                card.classList.remove('error-highlight');
+            });
+        }
+        
+        // Adicionar event listeners para remover destaques de erro
+        document.addEventListener('DOMContentLoaded', () => {
+            // Remover destaques quando o usuário interage com textareas
+            document.querySelectorAll('.validation-card textarea').forEach(textarea => {
+                textarea.addEventListener('input', removeErrorHighlights);
+                textarea.addEventListener('focus', removeErrorHighlights);
+            });
+            
+            // Remover destaques quando o usuário interage com radio buttons e checkboxes
+            document.querySelectorAll('.validation-card input[type="radio"], .validation-card input[type="checkbox"]').forEach(input => {
+                input.addEventListener('change', removeErrorHighlights);
+                input.addEventListener('click', removeErrorHighlights);
+            });
+        });
+        
+        // Botão Declinar Crise
+        declineCrisisBtn.onclick = async () => {
+            const validationData = collectValidationData();
+            
+            // Aqui você pode implementar a lógica para gerar relatório de declínio
+            console.log('Crise declinada:', { crisisData: window.crisisData, validationData });
+            
+            // Fechar modal e limpar dados
+            crisisValidationModal.style.display = 'none';
+            startCrisisModal.style.display = 'none';
+            clearCrisisForm();
+            
+            alert('Crise declinada. Relatório será gerado.');
+        };
+        
+        // Botão Declaração de Crise
+        declareCrisisBtn.onclick = async () => {
+            // Validar se todos os campos obrigatórios estão preenchidos
+            const validationErrors = validateRequiredFields();
+            
+            if (validationErrors.length > 0) {
+                // Destacar campos com erro
+                highlightErrors(validationErrors);
+                
+                // Mostrar mensagem de erro detalhada
+                const errorMessage = 'Por favor, preencha todos os campos obrigatórios:\n\n' + 
+                    validationErrors.join('\n');
+                alert(errorMessage);
+                return;
+            }
+            
+            const validationData = collectValidationData();
+            
+            // Combinar dados da crise com dados de validação
+            const fullCrisisData = {
+                ...window.crisisData,
+                validationData: validationData
+            };
+            
+            // Iniciar a crise com os dados de validação
+            const startResult = await callApi('POST', `${API_BASE_URL_SIM}/start`, {
+                userId: user.username,
+                userRole: user.role,
+                crisisType: fullCrisisData.type,
+                crisisCause: fullCrisisData.cause,
+                crisisScenario: fullCrisisData.scenario,
+                validationData: validationData
+            });
+
+            if (startResult && !startResult.error) {
+                // Fechar modais
+                crisisValidationModal.style.display = 'none';
+                startCrisisModal.style.display = 'none';
+                
+                // Limpar formulário
+                clearCrisisForm();
+                
+                // Mostrar popup de sucesso
+                showSuccessPopup();
+                
+                // Atualizar status
+                checkSimulationStatus();
+            } else {
+                alert(`Erro ao iniciar simulação: ${startResult?.error || 'Erro desconhecido'}`);
+            }
+        };
+        
+        // Função para limpar formulário de crise
+        function clearCrisisForm() {
+            crisisScenarioModal.value = '';
+            crisisCauseModal.value = '';
+            validateCrisisBtn.style.display = 'none';
+            startCrisisSubmitBtn.style.display = 'none';
+            window.crisisData = null;
+        }
+
+        // Função para mostrar popup de sucesso
+        const showSuccessPopup = () => {
+            const successPopup = document.getElementById('successPopup');
+            successPopup.style.display = 'flex';
+            
+            // Auto-fechar após 3 segundos
+            setTimeout(() => {
+                successPopup.style.display = 'none';
+            }, 3000);
+        };
+
+        goToPrdPageBtn.onclick = () => {
+            // Garante que o usuário atual seja mantido ao redirecionar
+            const currentUser = JSON.parse(localStorage.getItem('user'));
+            
+            // Validação adicional para garantir que é o usuário correto
+            if (!currentUser || !currentUser.username) {
+                window.location.href = '/';
+                return;
+            }
+            
+            // Salva múltiplas vezes para garantir persistência
+            localStorage.setItem('user', JSON.stringify(currentUser));
+            localStorage.setItem('userBackup', JSON.stringify(currentUser));
+            localStorage.setItem('lastValidUser', JSON.stringify(currentUser));
+            
+            // Adiciona um pequeno delay para garantir que o localStorage seja salvo
+            setTimeout(() => {
+                window.location.href = '/index.html?state=active';
+            }, 100);
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const crisisVoteBtn = document.getElementById('crisisVoteBtn');
+            const crisisVoteModal = document.getElementById('crisisVoteModal');
+            const crisisVoteDetails = document.getElementById('crisisVoteDetails');
+            const voteYesBtn = document.getElementById('voteYesBtn');
+            const voteNoBtn = document.getElementById('voteNoBtn');
+            const closeVoteModalBtn = document.getElementById('closeVoteModalBtn');
+
+            let hasVoted = false;
+            
+            async function updateVoteModalDetails() {
+                const statusData = await callApi('GET', `${API_BASE_URL_SIM}/status`);
+                if (statusData && statusData.crisisFormDetails && statusData.crisisFormDetails.type) {
+                    let validationInfo = '';
+                    if (statusData.validationData) {
+                        validationInfo = `
+                            <div class="validation-summary">
+                                <h4><i class="fas fa-clipboard-check"></i> Dados de Validação:</h4>
+                                <div class="validation-details">
+                                    <p><b>Cenário:</b> ${statusData.crisisFormDetails.scenario || 'Cenário 1'}</p>
+                                    <p><b>Natureza do Problema:</b> ${statusData.validationData.problemNature || 'Não informado'}</p>
+                                    <p><b>Times Acionados:</b> ${statusData.validationData.contingencyTeams || 'Não informado'}</p>
+                                    <p><b>Origem Identificada:</b> ${statusData.validationData.problemOrigin || 'Não informado'}</p>
+                                    <p><b>Análise Detalhada:</b> ${statusData.validationData.detailedAnalysis || 'Não informado'}</p>
+                                    <p><b>Validado por:</b> ${statusData.validationData.validatedBy || '---'}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    crisisVoteDetails.innerHTML = `
+                        <div class="crisis-info">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Informações da Crise:</h4>
+                            <p><b>Tipo de Crise:</b> ${statusData.crisisFormDetails.type}</p>
+                            <p><b>Descrição:</b> ${statusData.crisisFormDetails.cause}</p>
+                            <p><b>Iniciado por:</b> ${statusData.initiatedBy || '---'}</p>
+                        </div>
+                        ${validationInfo}
+                    `;
+                } else {
+                    crisisVoteDetails.innerHTML = '<p>Aguardando detalhes da crise...</p>';
+                }
+            }
+
+            if (crisisVoteBtn) {
+                crisisVoteBtn.onclick = async () => {
+                    await updateVoteModalDetails();
+                    crisisVoteModal.style.display = 'flex';
+                    isVoteModalOpen = true;
+                };
+            }
+            if (closeVoteModalBtn) {
+                closeVoteModalBtn.onclick = () => {
+                    crisisVoteModal.style.display = 'none';
+                    isVoteModalOpen = false;
+                };
+            }
+            async function tryVote(voteValue) {
+                if (hasVoted) {
+                    alert('Você já votou nesta crise. Aguarde o resultado da votação.');
+                    return;
+                }
+                const voteResult = await callApi('POST', `${API_BASE_URL_SIM}/vote`, { userId: user.username, vote: voteValue });
+                
+                if (voteResult && voteResult.error) {
+                    alert(`Erro ao votar: ${voteResult.error}`);
+                    if(voteResult.error.includes("já votou")) hasVoted = true;
+                    return;
+                }
+
+                hasVoted = true;
+                crisisVoteModal.style.display = 'none';
+                isVoteModalOpen = false;
+                alert(`Seu voto foi registrado como ${voteValue === 'SIM' ? 'CRISE' : 'ACIDENTE'}.`);
+                checkSimulationStatus();
+            }
+
+            if (voteYesBtn) {
+                voteYesBtn.onclick = async () => await tryVote('SIM');
+            }
+            if (voteNoBtn) {
+                voteNoBtn.onclick = async () => await tryVote('NAO');
+            }
+
+            fetchStats();
+            checkSimulationStatus();
+            simulationStatusInterval = setInterval(checkSimulationStatus, 3000);
+            
+            document.getElementById('dashboardTab').onclick = (e) => openTab(e, 'dashboardTab');
+            document.getElementById('prdTab').onclick = (e) => openTab(e, 'prdTab');
+            document.getElementById('statsTab').onclick = (e) => openTab(e, 'statsTab');
+            
+            // Event listener para fechar popup de sucesso
+            document.getElementById('successClose').onclick = () => {
+                document.getElementById('successPopup').style.display = 'none';
+            };
+        });
+    </script>
+    
+    <!-- Success Popup -->
+    <div class="success-popup" id="successPopup">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="success-message">
+                <h3>Crise validada e iniciada com sucesso!</h3>
+                <p>A crise foi validada, a votação foi iniciada e os membros do comitê foram notificados.</p>
+            </div>
+            <button class="success-close" id="successClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- AOS Animation Library -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100
+        });
+    </script>
+</body>
+</html>
